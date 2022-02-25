@@ -1,36 +1,4 @@
 div.search-bar-wrapper {
    flex: 1 1 auto;
    padding: 3rem;
-   --search-bar-padding: 0.8rem;
-   --search-bar-font-size: 1rem;
-}
-
-.search-bar {
-   width: 100%;
-   border: none;
-   border-radius: calc(
-      (var(--search-bar-font-size) * 1.4 + var(--search-bar-padding) * 2) / 2
-   );
-   padding: 0
-      calc(
-         (var(--search-bar-font-size) * 1.4 + var(--search-bar-padding) * 2) / 2
-      );
-   background-color: white;
-   color: black;
-   font-size: var(--search-bar-font-size);
-
-   display: flex;
-   flex-direction: row;
-   justify-content: center;
-   align-items: center;
-   gap: 0.5rem;
-}
-input.search-bar-input {
-   flex: 1 1 auto;
-   font-size: var(--search-bar-font-size);
-   padding: var(--search-bar-padding) 0;
-   border: none;
-}
-input.search-bar-input:focus {
-   outline: none;
 }

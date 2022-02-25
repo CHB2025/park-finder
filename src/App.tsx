@@ -12,7 +12,7 @@ function App() {
       <div className="App">
          <Routes>
             <Route path="/" element={<Home />}>
-               <Route path="search" element={<SearchResults />} />
+               <Route path="search/:query" element={<SearchResults />} />
             </Route>
             <Route path="*" />
          </Routes>

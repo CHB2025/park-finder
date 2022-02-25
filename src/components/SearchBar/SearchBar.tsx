@@ -1,5 +1,6 @@
-import { FormEvent, useState } from 'react';
+import React, { FormEvent, useState } from 'react';
 import { FaSearch, FaTimes } from 'react-icons/fa';
+import { InputGroup } from '../InputGroup/InputGroup';
 import './SearchBar.css';
 
 export type SearchBarProps = {
@@ -25,10 +26,10 @@ export const SearchBar: React.FC<SearchBarProps> = ({
    return (
       <div className="search-bar-wrapper">
          <form onSubmit={submitForm}>
-            <div className="search-bar">
+            <InputGroup>
                <FaSearch />
                <input
-                  className="search-bar-input"
+                  className="grow"
                   type="search"
                   placeholder="What do you want to do?"
                   value={search}
@@ -37,7 +38,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
                {
                   search ? <FaTimes onClick={clearForm} /> : null
                }
-            </div>
+            </InputGroup>
          </form>
       </div>
    )

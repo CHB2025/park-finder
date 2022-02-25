@@ -7,8 +7,7 @@ export const Home: React.FC = () => {
    const navigate = useNavigate();
 
    const search = (value: string) => {
-      console.log(value);
-      navigate('/search')
+      navigate('/search/' + value)
    }
    return (
       <div className="home">
@@ -18,7 +17,9 @@ export const Home: React.FC = () => {
                clearSearch={() => navigate('/')}
             />
          </header>
-         <Outlet />
+         <body>
+            <Outlet />
+         </body>
       </div>
    )
 }
