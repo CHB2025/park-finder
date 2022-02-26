@@ -1,0 +1,10 @@
+.park-preview {
+   background-color: #222;
+   border-radius: 1rem;
+   width: 100%;
+   padding: 1rem;
+}
+
+.park-preview:hover {
+   transform: scale(1.05);
+}

@@ -5,6 +5,7 @@ import {
 } from "react-router-dom";
 import './App.css';
 import { Home } from './pages/Home/Home';
+import { Park } from './pages/Park/Park';
 import { SearchResults } from './pages/SearchResults/SearchResults';
 
 function App() {
@@ -13,6 +14,7 @@ function App() {
          <Routes>
             <Route path="/" element={<Home />}>
                <Route path="search/:query" element={<SearchResults />} />
+               <Route path="park/:pmaid" element={<Park />} />
             </Route>
             <Route path="*" />
          </Routes>

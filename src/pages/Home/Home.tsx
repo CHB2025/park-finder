@@ -17,9 +17,7 @@ export const Home: React.FC = () => {
                clearSearch={() => navigate('/')}
             />
          </header>
-         <body>
-            <Outlet />
-         </body>
+         <Outlet />
       </div>
    )
 }

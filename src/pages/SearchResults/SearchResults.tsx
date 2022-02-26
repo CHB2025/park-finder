@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom';
+import { ParkPreview } from '../../components/ParkPreview/ParkPreview';
 import { ParkWithFeature } from '../../types/ParkWithFeature';
 import './SearchResults.css'
 
@@ -27,7 +28,7 @@ export const SearchResults: React.FC = () => {
       <div className="results-wrapper">
          {
             results.map((park) => {
-               return <p key={park.pmaid}>{park.name}: {park.feature_desc}</p>
+               return <ParkPreview park={park} />
             })
          }
       </div>
