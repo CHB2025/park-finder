@@ -1,8 +1,28 @@
 div.results-wrapper {
    display: flex;
+   flex-direction: row;
+   justify-content: center;
+   align-items: flex-start;
+   flex-wrap: wrap;
+   width: 100%;
+   max-width: 1600px;
+   gap: 1rem;
+   height: 65%;
+   overflow: hidden;
+}
+
+div.results-list {
+   display: flex;
    flex-direction: column;
    justify-content: flex-start;
    align-items: center;
-   width: 60%;
    gap: 1rem;
+   height: 100%;
+   overflow: scroll;
+   padding: 0 2%;
+}
+
+div.results-map {
+   flex: 1 1 auto;
+   height: 100%;
 }

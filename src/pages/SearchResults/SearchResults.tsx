@@ -1,9 +1,10 @@
-import { stringify } from 'querystring';
 import { useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom';
 import { ParkPreview } from '../../components/ParkPreview/ParkPreview';
 import { ParkWithFeature } from '../../types/ParkWithFeature';
+import { Map } from '../../components/Map/Map'
 import './SearchResults.css'
+import { Marker } from '../../components/Map/Marker';
 
 
 export const SearchResults: React.FC = () => {
@@ -36,12 +37,32 @@ export const SearchResults: React.FC = () => {
 
    return (
       <div className="results-wrapper">
-         {
-            Object.values(combinedResults).sort((a, b) => b.length - a.length).map((park) => {
+         <Map className="results-map" >
+            {
+               Object.values(combinedResults).sort((a, b) => b.length - a.length).map((park, index) => {
+                  if (park.some((p) => p.location !== undefined)) {
+                     const location = park.find((p) => p.location !== undefined)?.location
+                     return <Marker
+                        label={(index + 1).toString()}
+                        position={{
+                           lat: parseFloat(location?.latitude || '0'),
+                           lng: parseFloat(location?.longitude || '0')
+                        }}
+                        key={park[0].pmaid}
+                     />
+                  }
+                  return null;
+               })
+            }
+         </Map>
+         <div className="results-list">
+            {
+               Object.values(combinedResults).sort((a, b) => b.length - a.length).map((park, index) => {
 
-               return <ParkPreview key={park[0].pmaid} parkFeatures={park} />
-            })
-         }
+                  return <ParkPreview key={park[0].pmaid} index={index} parkFeatures={park} />
+               })
+            }
+         </div>
       </div>
    )
 }
