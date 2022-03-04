@@ -4,6 +4,7 @@ import {
    Route
 } from "react-router-dom";
 import './App.css';
+import { PositionProvider } from './hooks/usePosition';
 import { Home } from './pages/Home/Home';
 import { Park } from './pages/Park/Park';
 import { SearchResults } from './pages/SearchResults/SearchResults';
@@ -11,13 +12,15 @@ import { SearchResults } from './pages/SearchResults/SearchResults';
 function App() {
    return (
       <div className="App">
-         <Routes>
-            <Route path="/" element={<Home />}>
-               <Route path="search/:query" element={<SearchResults />} />
-               <Route path="park/:pmaid" element={<Park />} />
-            </Route>
-            <Route path="*" />
-         </Routes>
+         <PositionProvider>
+            <Routes>
+               <Route path="/" element={<Home />}>
+                  <Route path="search/:query" element={<SearchResults />} />
+                  <Route path="park/:pmaid" element={<Park />} />
+               </Route>
+               <Route path="*" />
+            </Routes>
+         </PositionProvider>
       </div>
    );
 }

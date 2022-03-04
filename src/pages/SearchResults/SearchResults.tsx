@@ -5,11 +5,13 @@ import { ParkWithFeature } from '../../types/ParkWithFeature';
 import { Map } from '../../components/Map/Map'
 import './SearchResults.css'
 import { Marker } from '../../components/Map/Marker';
+import { usePosition } from '../../hooks/usePosition';
 
 
 export const SearchResults: React.FC = () => {
    const { query } = useParams();
    const [results, setResults] = useState<ParkWithFeature[]>([]);
+   const pos = usePosition();
    const combinedResults = useMemo(() => {
       return results.reduce((obj, park) => {
          if (!obj.hasOwnProperty(park.pmaid)) {
@@ -19,6 +21,7 @@ export const SearchResults: React.FC = () => {
          return obj;
       }, {} as Record<string, ParkWithFeature[]>)
    }, [results])
+   const [distances, setDistances] = useState<Record<string, number>>({})
 
    const updateResults = async (q: string) => {
       const endpoint = 'https://data.seattle.gov/resource/j9km-ydkc.json'
@@ -35,32 +38,49 @@ export const SearchResults: React.FC = () => {
       if (query) updateResults(query)
    }, [query])
 
+   useEffect(() => {
+      if (pos) {
+         const newDistances = Object.keys(combinedResults).reduce((dis, pmaid) => {
+            const park = combinedResults[pmaid][0]
+            dis[pmaid] = google.maps.geometry.spherical.computeDistanceBetween(pos, { lat: parseFloat(park.location?.latitude || '0'), lng: parseFloat(park.location?.longitude || '0') })
+            return dis
+         }, {} as Record<string, number>)
+         setDistances(newDistances)
+      }
+   }, [pos, combinedResults])
+
+   const sortedKeys = Object.keys(combinedResults).sort((a, b) => distances[a] - distances[b])
+
    return (
       <div className="results-wrapper">
          <Map className="results-map" >
             {
-               Object.values(combinedResults).sort((a, b) => b.length - a.length).map((park, index) => {
-                  if (park.some((p) => p.location !== undefined)) {
-                     const location = park.find((p) => p.location !== undefined)?.location
-                     return <Marker
-                        label={(index + 1).toString()}
-                        position={{
-                           lat: parseFloat(location?.latitude || '0'),
-                           lng: parseFloat(location?.longitude || '0')
-                        }}
-                        key={park[0].pmaid}
-                     />
-                  }
-                  return null;
+               sortedKeys.map((pmaid, index) => {
+                  const parks = combinedResults[pmaid]
+                  const location = parks.find((p) => p.location !== undefined)?.location
+                  return <Marker
+                     label={(index + 1).toString()}
+                     position={{
+                        lat: parseFloat(location?.latitude || '0'),
+                        lng: parseFloat(location?.longitude || '0')
+                     }}
+                     title={parks[0].name}
+                     key={pmaid}
+                     clickable={true}
+                  />
                })
             }
          </Map>
          <div className="results-list">
             {
-               Object.values(combinedResults).sort((a, b) => b.length - a.length).map((park, index) => {
-
-                  return <ParkPreview key={park[0].pmaid} index={index} parkFeatures={park} />
-               })
+               sortedKeys.length > 0 ?
+                  sortedKeys.map((pmaid, index) => {
+                     const park = combinedResults[pmaid]
+                     return <ParkPreview key={pmaid} index={index} parkFeatures={park} />
+                  }) :
+                  <div>
+                     <h2 className="park-name">No Results Found</h2>
+                  </div>
             }
          </div>
       </div>

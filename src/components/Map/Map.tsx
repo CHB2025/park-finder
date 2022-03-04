@@ -1,5 +1,6 @@
 import { Status, Wrapper } from "@googlemaps/react-wrapper"
 import { Children, cloneElement, HTMLAttributes, isValidElement, useEffect, useRef, useState } from "react"
+import { usePosition } from "../../hooks/usePosition";
 
 type MapProps = HTMLAttributes<HTMLDivElement> & {
 
@@ -8,6 +9,7 @@ type MapProps = HTMLAttributes<HTMLDivElement> & {
 const LocalMap: React.FC<MapProps> = ({ children, ...rest }) => {
    const ref = useRef<HTMLDivElement>(null);
    const [map, setMap] = useState<google.maps.Map>()
+   const pos = usePosition();
 
    useEffect(() => {
       if (ref.current && !map) {
@@ -208,13 +210,31 @@ const LocalMap: React.FC<MapProps> = ({ children, ...rest }) => {
       }
    }, [ref, map])
 
+   useEffect(() => {
+      if (pos && map) {
+         map.setCenter(pos)
+         map.setZoom(12)
+      }
+   }, [pos, map])
+
    return (
       <>
          <div ref={ref} {...rest} />
          {
             Children.map(children, (child) => {
                if (isValidElement(child)) {
-                  return cloneElement(child, { map })
+                  return cloneElement(child, {
+                     map,
+                     label: { text: child.props.label, color: '#FFFFFF' },
+                     onClick: (event: google.maps.MapMouseEvent) => {
+                        if (child.props.onClick) child.props.onClick(event);
+
+                        if (event.latLng && map) {
+                           map.setCenter(event.latLng)
+                           map.setZoom(16)
+                        }
+                     }
+                  })
                }
             })
          }
@@ -226,7 +246,11 @@ const LocalMap: React.FC<MapProps> = ({ children, ...rest }) => {
 export const Map: React.FC<MapProps> = ({ children, ...rest }) => {
    const render = (status: Status) => <h1>{status}</h1>
    return (
-      <Wrapper apiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY || ''} render={render}>
+      <Wrapper
+         apiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY || ''}
+         render={render}
+         libraries={['geometry']}
+      >
          <LocalMap {...rest}>
             {children}
          </LocalMap>
