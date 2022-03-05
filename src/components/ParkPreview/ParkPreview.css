@@ -2,9 +2,14 @@
    background-color: #222;
    border-radius: 1rem;
    width: 100%;
-   padding: 0 1rem 1rem;
+   padding: 1rem;
 }
 
 .park-preview:hover {
    transform: scale(1.05);
+}
+
+.park-preview > .park-name {
+   font-size: 1.1rem;
+   font-weight: bold;
 }

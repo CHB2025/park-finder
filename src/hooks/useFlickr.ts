@@ -15,7 +15,6 @@ export function useFlickr<T>(
 
    const [data, setData] = useState<T>()
    const [error, setError] = useState<string>()
-   //const [internalParams] = useState(params)
 
    const makeRequest = useCallback(async (params: URLSearchParams) => {
       const endpoint = 'https://www.flickr.com/services/rest/?';
@@ -27,8 +26,6 @@ export function useFlickr<T>(
          setData(undefined)
          return;
       }
-
-      console.log('Flickr Data', data)
       setData(data[dataKey] as T)
    }, [dataKey])
 
@@ -46,6 +43,7 @@ export function useFlickr<T>(
       }
       makeRequest(p)
 
+      // eslint-disable-next-line react-hooks/exhaustive-deps
    }, [endpoint, JSON.stringify(params), makeRequest])
 
    return [data, error]

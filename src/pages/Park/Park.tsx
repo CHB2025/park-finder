@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import { ParkImages } from "../../components/ParkImages/ParkImages"
 import { ParkAddress } from "../../types/ParkAddress"
@@ -38,12 +38,16 @@ export const Park: React.FC = () => {
 
    if (parkAddress) {
       return (
-         <div className="park-display">
-            <h1 className="name">{parkAddress?.name}</h1>
-            <div className="address">{parkAddress?.address}<br />Seattle, WA {parkAddress?.zip_code}</div>
-            <ParkImages name={parkAddress.name} />
-
-         </div>
+         <section className="park">
+            <h1 className="park-name">{parkAddress.name}</h1>
+            <div className="park-display">
+               <ParkImages name={parkAddress.name} />
+               <div className="park-details">
+                  <address className="address">{parkAddress.address}<br />Seattle, WA {parkAddress.zip_code}</address>
+                  <ul className="features">{parkFeatures?.map((val) => <li>{val.feature_desc}</li>)}</ul>
+               </div>
+            </div>
+         </section>
       )
    }
 

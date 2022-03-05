@@ -12,16 +12,36 @@ export const SearchResults: React.FC = () => {
    const { query } = useParams();
    const [results, setResults] = useState<ParkWithFeature[]>([]);
    const pos = usePosition();
+
    const combinedResults = useMemo(() => {
-      return results.reduce((obj, park) => {
+      const groups = results.reduce((obj, park) => {
          if (!obj.hasOwnProperty(park.pmaid)) {
             obj[park.pmaid] = [];
          }
          obj[park.pmaid].push(park)
          return obj;
       }, {} as Record<string, ParkWithFeature[]>)
-   }, [results])
-   const [distances, setDistances] = useState<Record<string, number>>({})
+      // Not great to just filter out results without a location. Not sure how else to deal with them, besides getting the address.
+      return Object.keys(groups).filter((pmaid) => groups[pmaid].find((f) => f.location !== undefined) !== undefined).map((pmaid) => {
+         const feats = groups[pmaid];
+         const fwl = feats.find((f) => f.location !== undefined)
+         if (!fwl) { //will never happen because they are filtered out above
+            throw new Error('No feature included location in park ' + pmaid)
+         }
+         const { name, location, hours } = fwl
+         const goodLocation = { lat: parseFloat(location!.latitude), lng: parseFloat(location!.longitude) }
+         const distance = pos ? google.maps.geometry.spherical.computeDistanceBetween(pos, goodLocation) : Number.MAX_SAFE_INTEGER
+         return {
+            pmaid,
+            name,
+            location: goodLocation,
+            hours,
+            features: feats,
+            distance
+         }
+      })
+
+   }, [results, pos])
 
    const updateResults = async (q: string) => {
       const endpoint = 'https://data.seattle.gov/resource/j9km-ydkc.json'
@@ -29,43 +49,25 @@ export const SearchResults: React.FC = () => {
       params.append("$q", q)
       const request = await fetch(endpoint + '?' + params.toString())
       const data: ParkWithFeature[] = await request.json()
-      console.log(data)
       setResults(data)
    }
 
    useEffect(() => {
-      console.log(query)
       if (query) updateResults(query)
    }, [query])
 
-   useEffect(() => {
-      if (pos) {
-         const newDistances = Object.keys(combinedResults).reduce((dis, pmaid) => {
-            const park = combinedResults[pmaid][0]
-            dis[pmaid] = google.maps.geometry.spherical.computeDistanceBetween(pos, { lat: parseFloat(park.location?.latitude || '0'), lng: parseFloat(park.location?.longitude || '0') })
-            return dis
-         }, {} as Record<string, number>)
-         setDistances(newDistances)
-      }
-   }, [pos, combinedResults])
-
-   const sortedKeys = Object.keys(combinedResults).sort((a, b) => distances[a] - distances[b])
+   const sorted = combinedResults.sort((a, b) => a.distance - b.distance)
 
    return (
       <div className="results-wrapper">
          <Map className="results-map" >
             {
-               sortedKeys.map((pmaid, index) => {
-                  const parks = combinedResults[pmaid]
-                  const location = parks.find((p) => p.location !== undefined)?.location
+               sorted.map((park, index) => {
                   return <Marker
                      label={(index + 1).toString()}
-                     position={{
-                        lat: parseFloat(location?.latitude || '0'),
-                        lng: parseFloat(location?.longitude || '0')
-                     }}
-                     title={parks[0].name}
-                     key={pmaid}
+                     position={park.location}
+                     title={park.name}
+                     key={park.pmaid}
                      clickable={true}
                   />
                })
@@ -73,10 +75,9 @@ export const SearchResults: React.FC = () => {
          </Map>
          <div className="results-list">
             {
-               sortedKeys.length > 0 ?
-                  sortedKeys.map((pmaid, index) => {
-                     const park = combinedResults[pmaid]
-                     return <ParkPreview key={pmaid} index={index} parkFeatures={park} />
+               sorted.length > 0 ?
+                  sorted.map((park, index) => {
+                     return <ParkPreview key={park.pmaid} index={index} parkFeatures={park.features} />
                   }) :
                   <div>
                      <h2 className="park-name">No Results Found</h2>

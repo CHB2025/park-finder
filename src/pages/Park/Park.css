@@ -1,7 +1,17 @@
+.park > .park-name {
+   text-align: center;
+}
 .park-display {
+   padding: 0 8rem;
    width: 100%;
    display: flex;
-   flex-direction: column;
-   align-items: center;
+   flex-direction: row;
+   align-items: flex-start;
    justify-content: center;
+   gap: 2rem;
+}
+.park-details {
+   flex: 1 1 auto;
+   display: flex;
+   flex-direction: column;
 }
