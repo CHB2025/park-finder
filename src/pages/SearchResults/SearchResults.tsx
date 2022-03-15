@@ -77,6 +77,7 @@ export const SearchResults: React.FC = () => {
             {
                sorted.length > 0 ?
                   sorted.map((park, index) => {
+                     //onClick should move the map to focus on the corresponding marker
                      return <ParkPreview key={park.pmaid} index={index} parkFeatures={park.features} />
                   }) :
                   <div>

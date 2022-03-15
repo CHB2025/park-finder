@@ -6,7 +6,7 @@ type MapProps = HTMLAttributes<HTMLDivElement> & {
 
 }
 
-const LocalMap: React.FC<MapProps> = ({ children, ...rest }) => {
+export const Map: React.FC<MapProps> = ({ children, ...rest }) => {
    const ref = useRef<HTMLDivElement>(null);
    const [map, setMap] = useState<google.maps.Map>()
    const pos = usePosition();
@@ -243,7 +243,7 @@ const LocalMap: React.FC<MapProps> = ({ children, ...rest }) => {
 }
 
 
-export const Map: React.FC<MapProps> = ({ children, ...rest }) => {
+export const MapWrapper: React.FC = ({ children }) => {
    const render = (status: Status) => <h1>{status}</h1>
    return (
       <Wrapper
@@ -251,9 +251,7 @@ export const Map: React.FC<MapProps> = ({ children, ...rest }) => {
          render={render}
          libraries={['geometry']}
       >
-         <LocalMap {...rest}>
-            {children}
-         </LocalMap>
+         {children}
       </Wrapper>
    )
 }
